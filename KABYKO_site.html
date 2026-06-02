@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KABYKO — Coalition pour l'Environnement et le Bien Commun</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --vert-foret:  #1B4332;
+    --vert-feuille:#2D6A4F;
+    --vert-clair:  #52B788;
+    --vert-pale:   #D8F3DC;
+    --rouge-sang:  #8B0000;
+    --rouge-vif:   #C1121F;
+    --creme:       #F8F4E8;
+    --sable:       #E8DCC8;
+    --brun:        #5C3D2E;
+    --noir:        #1A1A1A;
+    --blanc:       #FFFFFF;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Lora', Georgia, serif; background: var(--creme); color: var(--noir); overflow-x: hidden; }
+
+  /* ── TYPOGRAPHY ── */
+  h1,h2,h3,h4 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.15; }
+  .mono { font-family: 'Courier New', monospace; }
+
+  /* ── LANG BAR ── */
+  .lang-bar {
+    background: var(--vert-foret);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    text-align: center; padding: 0.4rem;
+    position: relative; z-index: 1001;
+  }
+  .lang-bar p { font-family: 'Courier New', monospace; font-size: 0.62rem; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; }
+  .lang-bar span { color: var(--vert-clair); }
+
+  /* ── SCROLL PROGRESS ── */
+  .scroll-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.1); z-index: 2000; }
+  .scroll-progress-bar { height: 100%; background: linear-gradient(to right, var(--vert-clair), var(--rouge-sang)); width: 0%; transition: width 0.1s; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(27,67,50,0.97);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 68px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.35);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+  .nav-brand-logo {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--vert-clair), var(--vert-foret));
+    border: 2px solid rgba(82,183,136,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; color: var(--blanc);
+    font-size: 0.9rem; font-weight: 900; letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .nav-brand-text { display: flex; flex-direction: column; }
+  .nav-brand-name { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.1; }
+  .nav-brand-sub { font-family: 'Courier New', monospace; color: var(--vert-clair); font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 2px; }
+  .nav-links { display: flex; gap: 0.25rem; align-items: center; }
+  .nav-links a {
+    font-family: 'Lora', serif; font-size: 0.78rem; color: rgba(255,255,255,0.75);
+    text-decoration: none; padding: 0.4rem 0.85rem; border-radius: 3px;
+    transition: all 0.2s; letter-spacing: 0.03em;
+  }
+  .nav-links a:hover { color: var(--blanc); background: rgba(255,255,255,0.08); }
+  .nav-links a.active { color: var(--vert-clair); }
+  .nav-cta {
+    background: var(--rouge-sang) !important; color: var(--blanc) !important;
+    padding: 0.45rem 1.1rem !important; border-radius: 3px !important;
+    font-weight: 600 !important;
+  }
+  .nav-cta:hover { background: var(--rouge-vif) !important; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--blanc); border-radius: 2px; transition: all 0.3s; }
+  .mobile-menu { display: none; background: var(--vert-foret); padding: 1rem; }
+  .mobile-menu.open { display: flex; flex-direction: column; position: fixed; top: 68px; left: 0; right: 0; z-index: 999; border-top: 1px solid rgba(255,255,255,0.1); }
+  .mobile-menu a { font-family: 'Lora', serif; color: rgba(255,255,255,0.8); text-decoration: none; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.9rem; }
+
+  /* ── HERO ── */
+  #accueil {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 15% 60%, rgba(27,67,50,0.6) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 30%, rgba(45,106,79,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 90%, rgba(139,0,0,0.15) 0%, transparent 45%),
+      linear-gradient(160deg, #0a1f14 0%, #1B4332 35%, #2D6A4F 65%, #1a3d28 100%);
+    display: flex; align-items: center; position: relative; overflow: hidden;
+  }
+  .hero-texture {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 8px, #52B788 8px, #52B788 9px);
+    pointer-events: none;
+  }
+  .hero-deco-circle { position: absolute; border-radius: 50%; pointer-events: none; }
+  .hero-deco-1 { width: 420px; height: 420px; right: -80px; bottom: -80px; border: 1.5px solid rgba(139,0,0,0.3); }
+  .hero-deco-2 { width: 260px; height: 260px; right: 60px; bottom: 40px; background: radial-gradient(circle, rgba(139,0,0,0.12), transparent 70%); }
+  .hero-deco-3 { width: 180px; height: 180px; left: -40px; top: 80px; border: 1px solid rgba(82,183,136,0.2); }
+  .hero-inner { max-width: 960px; margin: 0 auto; padding: 5rem 2.5rem; position: relative; z-index: 2; width: 100%; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 2rem; }
+  .hero-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rouge-sang); flex-shrink: 0; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+  .hero-badge-text { font-family: 'Courier New', monospace; font-size: 0.68rem; color: var(--vert-clair); letter-spacing: 0.22em; text-transform: uppercase; }
+  .hero-title { font-size: clamp(2.8rem, 6vw, 5.2rem); color: var(--blanc); font-weight: 900; line-height: 1.02; margin-bottom: 0.3rem; }
+  .hero-title-accent { color: var(--vert-clair); display: block; }
+  .hero-subtitle { font-family: 'Lora', serif; font-size: clamp(0.95rem, 1.8vw, 1.15rem); color: rgba(255,255,255,0.65); line-height: 1.75; max-width: 560px; margin: 1.5rem 0 2.5rem; }
+  .hero-subtitle em { color: rgba(255,255,255,0.85); font-style: italic; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+  .btn-primary { background: var(--rouge-sang); color: var(--blanc); border: none; padding: 0.9rem 2.2rem; font-family: 'Lora', serif; font-size: 0.9rem; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 22px rgba(139,0,0,0.5); transition: all 0.2s; letter-spacing: 0.04em; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--rouge-vif); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(139,0,0,0.6); }
+  .btn-outline { background: transparent; color: var(--blanc); border: 1.5px solid rgba(255,255,255,0.35); padding: 0.9rem 2.2rem; font-family: 'Lora', serif; font-size: 0.9rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.6); }
+  .hero-stats { display: flex; gap: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
+  .stat-nb { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 2rem; font-weight: 700; line-height: 1; }
+  .stat-unit { font-size: 0.85rem; color: var(--vert-clair); }
+  .stat-label { font-family: 'Lora', serif; color: rgba(255,255,255,0.45); font-size: 0.72rem; margin-top: 0.3rem; }
+
+  /* ── SECTIONS COMMUNES ── */
+  section { padding: 6rem 2.5rem; }
+  .section-inner { max-width: 960px; margin: 0 auto; }
+  .section-eyebrow { font-family: 'Courier New', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .section-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; margin-bottom: 1rem; line-height: 1.15; }
+  .section-lead { font-size: 1.05rem; line-height: 1.75; color: var(--brun); max-width: 640px; }
+  .divider-rouge { width: 4px; height: 48px; background: var(--rouge-sang); border-radius: 2px; margin-bottom: 1.5rem; }
+  .divider-vert { width: 4px; height: 48px; background: var(--vert-clair); border-radius: 2px; margin-bottom: 1.5rem; }
+
+  /* ── MISSION ── */
+  #mission { background: var(--creme); }
+  .mission-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 5rem; align-items: start; margin-top: 3.5rem; }
+  .mission-left .section-title { color: var(--vert-foret); }
+  .mission-quote { border-left: 3px solid var(--vert-clair); padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .mission-quote p { font-style: italic; font-size: 1.1rem; line-height: 1.75; color: var(--noir); }
+  .mission-quote cite { font-family: 'Courier New', monospace; font-size: 0.62rem; color: var(--vert-clair); letter-spacing: 0.1em; display: block; margin-top: 0.75rem; }
+  .mission-text { font-size: 0.95rem; line-height: 1.8; color: var(--brun); margin-bottom: 1rem; }
+  .mission-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .pillar { background: var(--blanc); border: 1px solid var(--sable); border-top: 3px solid var(--vert-clair); border-radius: 0 0 8px 8px; padding: 1.25rem; transition: box-shadow 0.2s; }
+  .pillar:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .pillar-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .pillar h4 { font-size: 0.9rem; color: var(--vert-foret); margin-bottom: 0.4rem; }
+  .pillar p { font-size: 0.78rem; color: var(--brun); line-height: 1.55; }
+
+  /* ── MEMBRES ── */
+  #membres { background: var(--vert-foret); }
+  #membres .section-eyebrow { color: var(--vert-clair); }
+  #membres .section-title { color: var(--blanc); }
+  #membres .section-lead { color: rgba(255,255,255,0.65); }
+  .membres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 3rem; }
+  .membre-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1.75rem 1.25rem; text-align: center; transition: all 0.3s; }
+  .membre-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
+  .membre-avatar { width: 68px; height: 68px; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--blanc); }
+  .membre-name { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .membre-role { font-family: 'Courier New', monospace; font-size: 0.6rem; color: var(--vert-clair); letter-spacing: 0.1em; text-transform: uppercase; }
+  .membre-card.coord { border-top: 3px solid var(--rouge-sang); }
+  .membres-note { text-align: center; margin-top: 2rem; padding: 1.25rem; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); }
+  .membres-note p { font-style: italic; color: rgba(255,255,255,0.4); font-size: 0.82rem; }
+
+  /* ── ÉVÉNEMENTS ── */
+  #evenements { background: var(--blanc); }
+  .events-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+  .events-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; }
+  .event-card-main { background: var(--vert-foret); border-radius: 12px; padding: 2.5rem; position: relative; overflow: hidden; }
+  .event-card-main::before { content: ''; position: absolute; bottom: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; border: 1.5px solid rgba(139,0,0,0.3); }
+  .event-card-main::after  { content: ''; position: absolute; bottom: -10px; right: -10px; width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, rgba(139,0,0,0.14), transparent 70%); }
+  .event-badge { display: inline-block; background: var(--rouge-sang); color: var(--blanc); font-family: 'Courier New', monospace; font-size: 0.6rem; letter-spacing: 0.15em; padding: 0.3rem 0.8rem; border-radius: 2px; margin-bottom: 1.25rem; text-transform: uppercase; }
+  .event-date-big { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--blanc); line-height: 0.9; margin-bottom: 0.25rem; }
+  .event-month { font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--vert-clair); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .event-main-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--blanc); font-weight: 700; margin-bottom: 0.75rem; line-height: 1.25; position: relative; z-index: 1; }
+  .event-main-desc { font-size: 0.85rem; color: rgba(255,255,255,0.65); line-height: 1.65; margin-bottom: 1.5rem; position: relative; z-index: 1; }
+  .event-meta { display: flex; flex-direction: column; gap: 0.4rem; position: relative; z-index: 1; }
+  .event-meta-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+  .event-meta-item span:first-child { color: var(--vert-clair); font-size: 0.85rem; }
+  .event-activities { display: flex; flex-direction: column; gap: 1rem; }
+  .event-act { background: var(--creme); border: 1px solid var(--sable); border-left: 3px solid var(--vert-clair); border-radius: 0 8px 8px 0; padding: 1.1rem 1.25rem; }
+  .event-act-num { font-family: 'Courier New', monospace; font-size: 0.58rem; color: var(--rouge-sang); letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .event-act h4 { font-size: 0.88rem; color: var(--vert-foret); font-weight: 600; margin-bottom: 0.3rem; }
+  .event-act p { font-size: 0.75rem; color: var(--brun); line-height: 1.5; }
+  .event-partner { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.25rem; padding: 0.75rem 1rem; background: var(--vert-pale); border-radius: 6px; position: relative; z-index: 1; }
+  .event-partner .partner-label { font-family: 'Courier New', monospace; font-size: 0.6rem; color: var(--vert-foret); letter-spacing: 0.12em; font-weight: 700; white-space: nowrap; }
+  .event-partner .partner-name { font-size: 0.78rem; color: var(--brun); }
+
+  /* ── MANIFESTE ── */
+  #manifeste { background: var(--creme); }
+  .manifeste-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .manifeste-text { font-size: 0.92rem; line-height: 1.85; color: var(--brun); margin-bottom: 1rem; }
+  .manifeste-text strong { color: var(--vert-foret); }
+  .manifeste-extrait { background: var(--vert-foret); color: var(--blanc); border-radius: 10px; padding: 2rem; margin-bottom: 1.5rem; }
+  .manifeste-extrait-label { font-family: 'Courier New', monospace; font-size: 0.6rem; color: var(--vert-clair); letter-spacing: 0.15em; margin-bottom: 1rem; text-transform: uppercase; }
+  .manifeste-extrait p { font-style: italic; line-height: 1.75; font-size: 0.9rem; color: rgba(255,255,255,0.85); }
+  .manifeste-count { display: flex; gap: 2rem; padding: 1.25rem; background: var(--blanc); border: 1px solid var(--sable); border-radius: 8px; margin-bottom: 2rem; }
+  .mc-nb { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--vert-foret); line-height: 1; }
+  .mc-label { font-size: 0.75rem; color: var(--brun); margin-top: 0.3rem; }
+
+  /* ── FORMS ── */
+  .form-card { background: var(--blanc); border: 1px solid var(--sable); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .form-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--vert-foret); margin-bottom: 0.4rem; }
+  .form-card .form-sub { font-size: 0.8rem; color: var(--brun); margin-bottom: 1.5rem; font-style: italic; }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label { display: block; font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--brun); text-transform: uppercase; margin-bottom: 0.4rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.65rem 0.85rem;
+    border: 1.5px solid var(--sable); border-radius: 4px;
+    font-family: 'Lora', serif; font-size: 0.85rem; color: var(--noir);
+    background: var(--creme); transition: border-color 0.2s;
+    outline: none; -webkit-appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--vert-clair); background: var(--blanc); }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .btn-form-vert { background: var(--vert-foret); color: var(--blanc); border: none; padding: 0.85rem 1.5rem; font-family: 'Lora', serif; font-size: 0.88rem; border-radius: 4px; cursor: pointer; width: 100%; transition: background 0.2s; letter-spacing: 0.03em; }
+  .btn-form-vert:hover { background: var(--vert-feuille); }
+  .btn-form-rouge { background: var(--rouge-sang); color: var(--blanc); border: none; padding: 0.85rem 1.5rem; font-family: 'Lora', serif; font-size: 0.88rem; border-radius: 4px; cursor: pointer; width: 100%; transition: background 0.2s; }
+  .btn-form-rouge:hover { background: var(--rouge-vif); }
+  .check-line { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; }
+  .check-line input[type=checkbox] { margin-top: 3px; accent-color: var(--vert-foret); flex-shrink: 0; }
+  .check-line label { font-size: 0.78rem; color: var(--brun); line-height: 1.5; cursor: pointer; font-family: 'Lora', serif; }
+  .form-note { font-family: 'Courier New', monospace; font-size: 0.58rem; color: #aaa; text-align: center; margin-top: 0.75rem; letter-spacing: 0.04em; }
+
+  /* ── DONS ── */
+  #dons { background: var(--rouge-sang); }
+  .dons-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+  #dons .section-eyebrow { color: rgba(255,255,255,0.5); }
+  #dons .section-title { color: var(--blanc); }
+  #dons .section-lead { color: rgba(255,255,255,0.7); }
+  .dons-impact { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+  .impact-item { display: flex; gap: 1rem; align-items: flex-start; }
+  .impact-icon { font-size: 1.2rem; margin-top: 2px; flex-shrink: 0; }
+  .impact-text h4 { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .impact-text p { font-size: 0.78rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+  .dons-form { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 2rem; }
+  .dons-form h3 { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 1.3rem; margin-bottom: 0.4rem; }
+  .dons-form .form-sub { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-bottom: 1.5rem; font-style: italic; }
+  .dons-form label { color: rgba(255,255,255,0.65) !important; }
+  .dons-form input, .dons-form select {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1.5px solid rgba(255,255,255,0.2) !important;
+    color: var(--blanc) !important;
+  }
+  .dons-form input::placeholder { color: rgba(255,255,255,0.35); }
+  .dons-form input:focus, .dons-form select:focus { border-color: rgba(255,255,255,0.6) !important; background: rgba(255,255,255,0.12) !important; }
+  .dons-form select option { background: var(--vert-foret); color: var(--blanc); }
+  .montant-libre { position: relative; }
+  .montant-libre .currency { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5); font-family: 'Lora', serif; font-size: 0.9rem; pointer-events: none; }
+  .montant-libre input { padding-left: 2rem !important; }
+  .btn-don { background: var(--blanc); color: var(--rouge-sang); border: none; padding: 0.9rem 1.5rem; font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; border-radius: 4px; cursor: pointer; width: 100%; transition: all 0.2s; margin-top: 0.5rem; }
+  .btn-don:hover { background: var(--creme); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .secure-badge { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.75rem; }
+  .secure-badge span { font-family: 'Courier New', monospace; font-size: 0.58rem; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; }
+
+  /* ── MESSAGE ── */
+  #message { background: var(--blanc); }
+  .message-wrap { display: grid; grid-template-columns: 1fr 1.3fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .contact-infos { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2rem; }
+  .contact-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1.1rem; background: var(--creme); border-radius: 8px; border: 1px solid var(--sable); }
+  .contact-item-icon { font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+  .contact-item h4 { font-family: 'Courier New', monospace; font-size: 0.62rem; color: var(--vert-foret); letter-spacing: 0.1em; font-weight: 700; margin-bottom: 0.3rem; }
+  .contact-item p { font-size: 0.82rem; color: var(--brun); line-height: 1.5; }
+  .social-links { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+  .social-btn { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; background: var(--vert-foret); color: var(--blanc); border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-decoration: none; transition: background 0.2s; }
+  .social-btn:hover { background: var(--vert-feuille); }
+  .message-form { background: var(--blanc); border: 1px solid var(--sable); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .message-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--vert-foret); margin-bottom: 0.3rem; }
+  .message-form .form-sub { font-size: 0.8rem; color: var(--brun); margin-bottom: 1.25rem; font-style: italic; }
+  .message-type-btns { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .type-btn { padding: 0.35rem 0.9rem; border: 1.5px solid var(--sable); background: var(--creme); color: var(--brun); border-radius: 20px; font-size: 0.75rem; cursor: pointer; font-family: 'Lora', serif; transition: all 0.2s; }
+  .type-btn.selected { background: var(--vert-foret); color: var(--blanc); border-color: var(--vert-foret); }
+
+  /* ── FOOTER ── */
+  .footer-bar { height: 4px; background: linear-gradient(to right, var(--vert-foret), var(--vert-clair), var(--rouge-sang)); }
+  footer { background: #0a1f14; padding: 4rem 2.5rem 2rem; }
+  .footer-grid { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .footer-brand-name { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .footer-brand-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; max-width: 280px; }
+  .footer-col h4 { font-family: 'Courier New', monospace; font-size: 0.62rem; color: var(--vert-clair); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .footer-col a { display: block; font-size: 0.82rem; color: rgba(255,255,255,0.5); text-decoration: none; margin-bottom: 0.6rem; transition: color 0.2s; font-family: 'Lora', serif; }
+  .footer-col a:hover { color: var(--blanc); }
+  .footer-bottom { max-width: 960px; margin: 0 auto; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-bottom p { font-family: 'Courier New', monospace; font-size: 0.6rem; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--vert-foret); color: var(--blanc); padding: 1rem 1.5rem; border-radius: 8px; font-family: 'Lora', serif; font-size: 0.88rem; box-shadow: 0 8px 30px rgba(0,0,0,0.3); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 320px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 1.2rem; margin-bottom: 0.3rem; display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mission-grid, .manifeste-wrap, .dons-inner, .message-wrap { grid-template-columns: 1fr; gap: 2rem; }
+    .membres-grid { grid-template-columns: 1fr 1fr; }
+    .events-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .mission-pillars { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.5rem; }
+    nav { padding: 0 1.5rem; }
+    .hero-inner { padding: 3.5rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+  @media(max-width: 480px) {
+    .membres-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-btns { flex-direction: column; }
+    .hero-btns a { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress"><div class="scroll-progress-bar" id="progressBar"></div></div>
+
+<!-- TOP LANG BAR -->
+<div class="lang-bar">
+  <p>Site bilingue · <span>Français</span> &amp; <span>Kreyòl Ayisyen</span> · Kowalisyon pou Anviwònman ak Byen Komen</p>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="nav-brand" href="#accueil">
+    <div class="nav-brand-logo">K</div>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">KABYKO</span>
+      <span class="nav-brand-sub">Coalition pour l'Environnement</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#accueil" class="active">Accueil</a>
+    <a href="#mission">Mission</a>
+    <a href="#membres">Membres</a>
+    <a href="#evenements">Événements</a>
+    <a href="#manifeste">Manifeste</a>
+    <a href="#dons">Dons</a>
+    <a href="#message" class="nav-cta">Message</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#accueil" onclick="toggleMenu()">Accueil</a>
+  <a href="#mission" onclick="toggleMenu()">Mission</a>
+  <a href="#membres" onclick="toggleMenu()">Membres</a>
+  <a href="#evenements" onclick="toggleMenu()">Événements</a>
+  <a href="#manifeste" onclick="toggleMenu()">Manifeste</a>
+  <a href="#dons" onclick="toggleMenu()">Dons</a>
+  <a href="#message" onclick="toggleMenu()">Message</a>
+</div>
+
+<!-- ════════════════════════════════ -->
+<!-- HERO / ACCUEIL                   -->
+<!-- ════════════════════════════════ -->
+<section id="accueil">
+  <div class="hero-texture"></div>
+  <div class="hero-deco-circle hero-deco-1"></div>
+  <div class="hero-deco-circle hero-deco-2"></div>
+  <div class="hero-deco-circle hero-deco-3"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span class="hero-badge-text">Kowalisyon pou Anviwònman ak Byen Komen — Haïti 2026</span>
+    </div>
+    <h1 class="hero-title">
+      Teritwa Nou
+      <span class="hero-title-accent">se Lavi Nou</span>
+    </h1>
+    <p class="hero-subtitle">
+      <em>Notre territoire, c'est notre vie.</em><br/>
+      Un sursaut national pour la protection de l'environnement haïtien.
+      Rejoignez la coalition et signez le Manifeste pour l'Environnement et le Bien Commun.
+    </p>
+    <div class="hero-btns">
+      <a href="#manifeste" class="btn-primary">Signer le Manifeste →</a>
+      <a href="#mission" class="btn-outline">Découvrir KABYKO</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-nb">1 750 <span class="stat-unit">km</span></div>
+        <div class="stat-label">de côtes haïtiennes à protéger</div>
+      </div>
+      <div>
+        <div class="stat-nb">5 <span class="stat-unit">Juin</span></div>
+        <div class="stat-label">Événement inaugural JME 2026</div>
+      </div>
+      <div>
+        <div class="stat-nb">1 <span class="stat-unit">Manifeste</span></div>
+        <div class="stat-label">Pour l'Environnement &amp; le Bien Commun</div>
+      </div>
+      <div>
+        <div class="stat-nb">UNESCO</div>
+        <div class="stat-label">Partenaire principal</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- MISSION                          -->
+<!-- ════════════════════════════════ -->
+<section id="mission">
+  <div class="section-inner">
+    <div class="mission-grid">
+      <div class="mission-left">
+        <div class="divider-rouge"></div>
+        <p class="section-eyebrow" style="color:var(--rouge-sang)">Notre Mission · Misyon Nou</p>
+        <h2 class="section-title">Protéger<br/>la Terre<br/>Haïtienne</h2>
+        <p style="font-family:'Courier New',monospace;font-size:0.65rem;color:var(--vert-clair);letter-spacing:0.1em;margin-top:0.75rem">KABYKO · 2026</p>
+      </div>
+      <div>
+        <div class="mission-quote">
+          <p>"Mobiliser les forces vives de la société haïtienne vers un sursaut national pour la protection de l'environnement et la gestion durable du territoire."</p>
+          <cite>— Manifeste pour l'Environnement et le Bien Commun, KABYKO</cite>
+        </div>
+        <p class="mission-text">
+          Haïti possède un environnement complexe et hautement diversifié — forêts sèches, zones humides,
+          1 750 kilomètres de côtes riches en écosystèmes marins et côtiers extraordinaires.
+        </p>
+        <p class="mission-text">
+          Malgré cette richesse naturelle, l'absence de mécanismes de contrôle territorial a entraîné une
+          dégradation sévère. Face à ce constat, un groupe de citoyens engagés a fondé <strong>KABYKO</strong>
+          — pour faire de la sauvegarde environnementale un idéal collectif et le moteur d'un redressement national.
+        </p>
+        <p class="mission-text">
+          KABYKO — <em>Kowalisyon pou Anviwònman ak Byen Komen</em> — est une coalition citoyenne fondée sur
+          le Manifeste pour la sauvegarde du territoire haïtien et de ses écosystèmes, en partenariat avec l'UNESCO.
+        </p>
+        <div class="mission-pillars">
+          <div class="pillar">
+            <div class="pillar-icon">🌿</div>
+            <h4>Sensibilisation</h4>
+            <p>Éduquer le public universitaire, civil et étatique à la valeur des écosystèmes haïtiens.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">📋</div>
+            <h4>Le Manifeste</h4>
+            <p>Un engagement collectif pour une gestion responsable du territoire national.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🤝</div>
+            <h4>Coalition</h4>
+            <p>Rassembler acteurs civils, académiques, étatiques autour du bien commun.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🌊</div>
+            <h4>Protection côtière</h4>
+            <p>Défendre les 1 750 km de côtes et les écosystèmes marins face à l'urgence climatique.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- MEMBRES                          -->
+<!-- ════════════════════════════════ -->
+<section id="membres">
+  <div class="section-inner">
+    <p class="section-eyebrow">Membres &amp; Équipe · Manm ak Ekip</p>
+    <h2 class="section-title">La Coalition</h2>
+    <p class="section-lead">Des citoyens engagés, des universitaires, des leaders de la société civile — unis autour d'une seule cause : la terre haïtienne.</p>
+    <div class="membres-grid">
+      <div class="membre-card coord">
+        <div class="membre-avatar" style="background:var(--rouge-sang)">K</div>
+        <div class="membre-name">Coordination KABYKO</div>
+        <div class="membre-role">Coordination Provisoire</div>
+      </div>
+      <div class="membre-card">
+        <div class="membre-avatar" style="background:var(--vert-feuille)">E</div>
+        <div class="membre-name">Membres Fondateurs</div>
+        <div class="membre-role">Signataires du Manifeste</div>
+      </div>
+      <div class="membre-card">
+        <div class="membre-avatar" style="background:var(--brun)">A</div>
+        <div class="membre-name">Comité Académique</div>
+        <div class="membre-role">Universitaires &amp; Experts</div>
+      </div>
+      <div class="membre-card">
+        <div class="membre-avatar" style="background:var(--vert-clair);color:var(--vert-foret)">S</div>
+        <div class="membre-name">Société Civile</div>
+        <div class="membre-role">Organisations Partenaires</div>
+      </div>
+    </div>
+    <div class="membres-note">
+      <p>Les profils détaillés des membres seront publiés après validation de la coordination.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- ÉVÉNEMENTS                       -->
+<!-- ════════════════════════════════ -->
+<section id="evenements">
+  <div class="section-inner">
+    <div class="events-header">
+      <div>
+        <div class="divider-vert"></div>
+        <p class="section-eyebrow" style="color:var(--vert-clair)">Agendaj · Agenda</p>
+        <h2 class="section-title" style="color:var(--vert-foret)">Nos Événements</h2>
+      </div>
+      <a href="#message" class="btn-primary" style="font-size:0.8rem;padding:0.65rem 1.4rem">Soumettre un événement</a>
+    </div>
+    <div class="events-grid">
+      <div class="event-card-main">
+        <span class="event-badge">⚡ Événement inaugural</span>
+        <div class="event-date-big">05</div>
+        <div class="event-month">Juin 2026 · Montagne Noire, Haïti</div>
+        <h3 class="event-main-title">Journée Mondiale de l'Environnement 2026</h3>
+        <p class="event-main-desc">Lancement officiel de la dynamique KABYKO — une journée de mobilisation, de débat et d'engagement citoyen pour la protection des écosystèmes haïtiens.</p>
+        <div class="event-meta">
+          <div class="event-meta-item"><span>📍</span><span>Montagne Noire, Haïti</span></div>
+          <div class="event-meta-item"><span>🤝</span><span>En partenariat avec l'UNESCO</span></div>
+          <div class="event-meta-item"><span>🎯</span><span>Universitaires · Société civile · État</span></div>
+          <div class="event-meta-item"><span>📅</span><span>Journée complète — Programme à venir</span></div>
+        </div>
+        <div class="event-partner">
+          <span class="partner-label">PARTENAIRE</span>
+          <span class="partner-name">UNESCO — Organisation des Nations Unies pour l'Éducation</span>
+        </div>
+      </div>
+      <div class="event-activities">
+        <div style="font-family:'Courier New',monospace;font-size:0.62rem;color:var(--vert-foret);letter-spacing:0.12em;margin-bottom:0.75rem;text-transform:uppercase">Au Programme</div>
+        <div class="event-act">
+          <div class="event-act-num">ACTIVITÉ 01</div>
+          <h4>Projection &amp; Débat</h4>
+          <p>Film documentaire <em>« Ainsi parla la mer »</em> d'Arnold Antonin — beauté et détresse de l'écosystème marin haïtien.</p>
+        </div>
+        <div class="event-act">
+          <div class="event-act-num">ACTIVITÉ 02</div>
+          <h4>Conférence-Débat</h4>
+          <p><em>« Teritwa nou se lavi nou »</em> — Enjeux de la gestion territoriale et réduction de la vulnérabilité environnementale.</p>
+        </div>
+        <div class="event-act">
+          <div class="event-act-num" style="color:var(--rouge-sang)">ACTIVITÉ 03</div>
+          <h4>Campagne Manifeste</h4>
+          <p>Espace officiel d'engagement pour la signature collective du Manifeste pour l'Environnement et le Bien Commun.</p>
+        </div>
+        <div class="event-act">
+          <div class="event-act-num">ACTIVITÉ 04</div>
+          <h4>Mobilisation des parties prenantes</h4>
+          <p>Accueil d'un public diversifié : étudiants, universitaires, OSC et hauts responsables étatiques.</p>
+        </div>
+        <a href="#manifeste" class="btn-primary" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.82rem">Je participe →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- MANIFESTE                        -->
+<!-- ════════════════════════════════ -->
+<section id="manifeste">
+  <div class="section-inner">
+    <div class="divider-rouge"></div>
+    <p class="section-eyebrow" style="color:var(--rouge-sang)">Manifès · Manifeste</p>
+    <h2 class="section-title" style="color:var(--vert-foret)">Le Manifeste pour<br/>l'Environnement</h2>
+    <div class="manifeste-wrap">
+      <div>
+        <div class="manifeste-extrait">
+          <div class="manifeste-extrait-label">Extrait du Manifeste — KABYKO 2026</div>
+          <p>"L'environnement haïtien est notre héritage commun. Sa dégradation est l'affaire de tous. Sa protection est la responsabilité de chacun. Nous, signataires, nous engageons à faire de la sauvegarde environnementale un idéal collectif et le moteur d'un sursaut qualitatif pour redresser le pays."</p>
+        </div>
+        <div class="manifeste-count">
+          <div>
+            <div class="mc-nb">—</div>
+            <div class="mc-label">Signataires actuels</div>
+          </div>
+          <div>
+            <div class="mc-nb">∞</div>
+            <div class="mc-label">Objectif : mobilisation nationale</div>
+          </div>
+        </div>
+        <p class="manifeste-text">Le Manifeste est le socle fondateur de KABYKO. En le signant, vous rejoignez un mouvement citoyen pour la protection du territoire haïtien, des côtes, des forêts et des écosystèmes.</p>
+        <p class="manifeste-text">Chaque signature compte. Chaque voix renforce la coalition.</p>
+      </div>
+      <div class="form-card">
+        <h3>Signer le Manifeste</h3>
+        <p class="form-sub">Siyonnen Manifès la · Je m'engage pour l'environnement</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" placeholder="Marie"/>
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" placeholder="Pierre"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse e-mail</label>
+          <input type="email" placeholder="marie.pierre@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>Ville / Région en Haïti</label>
+          <input type="text" placeholder="Port-au-Prince, Pétion-Ville..."/>
+        </div>
+        <div class="form-group">
+          <label>Secteur / Profession</label>
+          <select>
+            <option value="">Choisir...</option>
+            <option>Universitaire / Chercheur</option>
+            <option>Étudiant</option>
+            <option>Société civile / ONG</option>
+            <option>Secteur public / État</option>
+            <option>Secteur privé</option>
+            <option>Citoyen·ne engagé·e</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="check-line">
+          <input type="checkbox" id="chk-manifeste"/>
+          <label for="chk-manifeste">J'ai lu le Manifeste pour l'Environnement et le Bien Commun et j'y adhère pleinement.</label>
+        </div>
+        <div class="check-line">
+          <input type="checkbox" id="chk-actus"/>
+          <label for="chk-actus">Je souhaite recevoir les actualités et événements de KABYKO.</label>
+        </div>
+        <button class="btn-form-vert" onclick="showToast('✅','Merci pour votre signature ! Bienvenue dans la coalition KABYKO.')">
+          Signer le Manifeste →
+        </button>
+        <p class="form-note">🔒 Vos données restent confidentielles · Aucune revente</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- DONS                             -->
+<!-- ════════════════════════════════ -->
+<section id="dons">
+  <div class="section-inner">
+    <div class="dons-inner">
+      <div>
+        <p class="section-eyebrow">Sipòte Nou · Soutenir KABYKO</p>
+        <h2 class="section-title">Faites un Don</h2>
+        <p class="section-lead">Chaque don, quel que soit le montant, contribue directement à la protection de l'environnement haïtien.</p>
+        <div class="dons-impact">
+          <div class="impact-item">
+            <div class="impact-icon">🌿</div>
+            <div class="impact-text">
+              <h4>Financer nos actions</h4>
+              <p>Ateliers de sensibilisation, événements publics, campagnes de terrain.</p>
+            </div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-icon">📢</div>
+            <div class="impact-text">
+              <h4>Amplifier la voix citoyenne</h4>
+              <p>Production de contenus éducatifs, médias, diffusion du Manifeste.</p>
+            </div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-icon">🌊</div>
+            <div class="impact-text">
+              <h4>Protéger les côtes &amp; forêts</h4>
+              <p>Activités de terrain, partenariats institutionnels, programmes locaux.</p>
+            </div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-icon">🤝</div>
+            <div class="impact-text">
+              <h4>Soutenir la coalition</h4>
+              <p>Faire vivre KABYKO comme mouvement citoyen indépendant et durable.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dons-form">
+        <h3>Faire un Don</h3>
+        <p class="form-sub">Fè yon Don · Montant libre à votre convenance</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" placeholder="Prénom"/>
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" placeholder="Nom"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse e-mail</label>
+          <input type="email" placeholder="votre@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>Montant (USD)</label>
+          <div class="montant-libre">
+            <span class="currency">$</span>
+            <input type="number" placeholder="0.00" min="1"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Moyen de paiement</label>
+          <select>
+            <option value="">Choisir...</option>
+            <option>Virement bancaire</option>
+            <option>MonCash</option>
+            <option>PayPal</option>
+            <option>Carte bancaire</option>
+          </select>
+        </div>
+        <div class="check-line">
+          <input type="checkbox" id="chk-don-anon"/>
+          <label for="chk-don-anon">Je souhaite que mon don reste anonyme.</label>
+        </div>
+        <button class="btn-don" onclick="showToast('💚','Merci pour votre générosité ! Votre don soutient la cause environnementale haïtienne.')">
+          Faire un Don →
+        </button>
+        <div class="secure-badge">
+          <span>🔒 PAIEMENT SÉCURISÉ · DONNÉES PROTÉGÉES</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- MESSAGE / CONTACT                -->
+<!-- ════════════════════════════════ -->
+<section id="message">
+  <div class="section-inner">
+    <div class="divider-vert"></div>
+    <p class="section-eyebrow" style="color:var(--vert-clair)">Kontakte Nou · Nous contacter</p>
+    <h2 class="section-title" style="color:var(--vert-foret)">Envoyer un Message</h2>
+    <div class="message-wrap">
+      <div>
+        <p class="section-lead">Vous souhaitez rejoindre KABYKO, proposer un partenariat, ou simplement nous écrire ? Toutes les portes sont ouvertes.</p>
+        <div class="contact-infos">
+          <div class="contact-item">
+            <div class="contact-item-icon">✉️</div>
+            <div>
+              <h4>Email</h4>
+              <p>contact@kabyko.ht</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📍</div>
+            <div>
+              <h4>Localisation</h4>
+              <p>Pétion-Ville, Haïti</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🤝</div>
+            <div>
+              <h4>Partenariats</h4>
+              <p>Organisations, institutions académiques, société civile, État haïtien.</p>
+            </div>
+          </div>
+        </div>
+        <div class="social-links">
+          <a href="#" class="social-btn">📘 Facebook</a>
+          <a href="#" class="social-btn">📷 Instagram</a>
+        </div>
+      </div>
+      <div class="message-form">
+        <h3>Nous écrire</h3>
+        <p class="form-sub">Ekrinou · Choisissez le type de message</p>
+        <div class="message-type-btns">
+          <button class="type-btn selected" onclick="selectType(this)">Rejoindre</button>
+          <button class="type-btn" onclick="selectType(this)">Partenariat</button>
+          <button class="type-btn" onclick="selectType(this)">Événement</button>
+          <button class="type-btn" onclick="selectType(this)">Autre</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" placeholder="Prénom"/>
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" placeholder="Nom"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse e-mail</label>
+          <input type="email" placeholder="votre@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>Organisation (optionnel)</label>
+          <input type="text" placeholder="Nom de votre organisation..."/>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea placeholder="Votre message pour KABYKO..."></textarea>
+        </div>
+        <button class="btn-form-vert" onclick="showToast('📨','Message envoyé ! Nous vous répondrons dans les plus brefs délais.')">
+          Envoyer le Message →
+        </button>
+        <p class="form-note">🔒 Vos données restent confidentielles · KABYKO ne revend aucune information</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ -->
+<!-- FOOTER                           -->
+<!-- ════════════════════════════════ -->
+<div class="footer-bar"></div>
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">KABYKO</div>
+      <p class="footer-brand-desc">Coalition pour l'Environnement et le Bien Commun. Fondée sur le Manifeste pour la sauvegarde du territoire haïtien et de ses écosystèmes.</p>
+      <p style="font-family:'Courier New',monospace;font-size:0.58rem;color:rgba(255,255,255,0.2);margin-top:1.25rem;letter-spacing:0.08em">Partenaire UNESCO · Haïti 2026</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <a href="#accueil">Accueil</a>
+      <a href="#mission">Notre Mission</a>
+      <a href="#membres">Les Membres</a>
+      <a href="#evenements">Événements</a>
+    </div>
+    <div class="footer-col">
+      <h4>S'engager</h4>
+      <a href="#manifeste">Signer le Manifeste</a>
+      <a href="#dons">Faire un Don</a>
+      <a href="#message">Nous rejoindre</a>
+      <a href="#message">Partenariat</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:contact@kabyko.ht">contact@kabyko.ht</a>
+      <a href="#">Pétion-Ville, Haïti</a>
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 KABYKO — COALITION POUR L'ENVIRONNEMENT ET LE BIEN COMMUN · TOUS DROITS RÉSERVÉS</p>
+    <p>TERITWA NOU SE LAVI NOU 🌿</p>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon"></span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+  /* ── Scroll progress ── */
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  /* ── Active nav link ── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => {
+          a.classList.remove('active');
+          if (a.getAttribute('href') === '#' + e.target.id) a.classList.add('active');
+        });
+      }
+    });
+  }, { threshold: 0.35 });
+  sections.forEach(s => obs.observe(s));
+
+  /* ── Mobile menu ── */
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  /* ── Toast ── */
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4500);
+  }
+
+  /* ── Message type selector ── */
+  function selectType(btn) {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  /* ── Close menu on outside click ── */
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('mobileMenu');
+    const ham = document.getElementById('hamburger');
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !ham.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
