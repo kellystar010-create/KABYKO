@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KABYKO — Coalition pour l'Environnement et le Bien Commun</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --vert-foret:  #1B4332;
+    --vert-feuille:#2D6A4F;
+    --vert-clair:  #52B788;
+    --vert-pale:   #D8F3DC;
+    --rouge-sang:  #8B0000;
+    --rouge-vif:   #C1121F;
+    --creme:       #F8F4E8;
+    --sable:       #E8DCC8;
+    --brun:        #5C3D2E;
+    --noir:        #1A1A1A;
+    --blanc:       #FFFFFF;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Lora', Georgia, serif; background: var(--creme); color: var(--noir); overflow-x: hidden; }
+  h1,h2,h3,h4 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.15; }
+  .mono { font-family: 'Courier New', monospace; }
+  .lang-bar { background: var(--vert-foret); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; padding: 0.4rem; position: relative; z-index: 1001; }
+  .lang-bar p { font-family: 'Courier New', monospace; font-size: 0.62rem; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; }
+  .lang-bar span { color: var(--vert-clair); }
+  .scroll-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.1); z-index: 2000; }
+  .scroll-progress-bar { height: 100%; background: linear-gradient(to right, var(--vert-clair), var(--rouge-sang)); width: 0%; transition: width 0.1s; }
+  nav { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(27,67,50,0.97); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; height: 68px; box-shadow: 0 2px 24px rgba(0,0,0,0.35); }
+  .nav-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+  .nav-brand-logo { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--vert-clair), var(--vert-foret)); border: 2px solid rgba(82,183,136,0.5); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 0.9rem; font-weight: 900; letter-spacing: -0.02em; flex-shrink: 0; }
+  .nav-brand-text { display: flex; flex-direction: column; }
+  .nav-brand-name { font-family: 'Playfair Display', serif; color: var(--blanc); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.1; }
+  .nav-brand-sub { font-family: 'Courier New', monospace; color: var(--vert-clair); font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 2px; }
+  .nav-links { display: flex; gap: 0.25rem; align-items: center; }
+  .nav-links a { font-family: 'Lora', serif; font-size: 0.78rem; color: rgba(255,255,255,0.75); text-decoration: none; padding: 0.4rem 0.85rem; border-radius: 3px; transition: all 0.2s; letter-spacing: 0.03em; }
+  .nav-links a:hover { color: var(--blanc); background: rgba(255,255,255,0.08); }
+  .nav-links a.active { color: var(--vert-clair); }
+  .nav-cta { background: var(--rouge-sang) !important; color: var(--blanc) !important; padding: 0.45rem 1.1rem !important; border-radius: 3px !important; font-weight: 600 !important; }
+  .nav-cta:hover { background: var(--rouge-vif) !important; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--blanc); border-radius: 2px; transition: all 0.3s; }
+  .mobile-menu { display: none; background: var(--vert-foret); padding: 1rem; }
+  .mobile-menu.open { display: flex; flex-direction: column; position: fixed; top: 68px; left: 0; right: 0; z-index: 999; border-top: 1px solid rgba(255,255,255,0.1); }
+  .mobile-menu a { font-family: 'Lora', serif; color: rgba(255,255,255,0.8); text-decoration: none; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.9rem; }
+  #accueil { min-height: 100vh; background: radial-gradient(ellipse at 15% 60%, rgba(27,67,50,0.6) 0%, transparent 55%), radial-gradient(ellipse at 85% 30%, rgba(45,106,79,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 90%, rgba(139,0,0,0.15) 0%, transparent 45%), linear-gradient(160deg, #0a1f14 0%, #1B4332 35%, #2D6A4F 65%, #1a3d28 100%); display: flex; align-items: center; position: relative; overflow: hidden; }
+  .hero-inner { max-width: 960px; margin: 0 auto; padding: 5rem 2.5rem; position: relative; z-index: 2; width: 100%; }
+  .btn-primary { background: var(--rouge-sang); color: var(--blanc); border: none; padding: 0.9rem 2.2rem; font-family: 'Lora', serif; font-size: 0.9rem; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 22px rgba(139,0,0,0.5); transition: all 0.2s; letter-spacing: 0.04em; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--rouge-vif); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(139,0,0,0.6); }
+  section { padding: 6rem 2.5rem; }
+  .section-inner { max-width: 960px; margin: 0 auto; }
+  @media(max-width: 768px) { .nav-links { display: none; } .hamburger { display: flex; } section { padding: 4rem 1.5rem; } nav { padding: 0 1.5rem; } .hero-inner { padding: 3.5rem 1.5rem; } }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress"><div class="scroll-progress-bar" id="progressBar"></div></div>
+
+<div class="lang-bar">
+  <p>Site bilingue · <span>Français</span> &amp; <span>Kreyòl Ayisyen</span> · Kowalisyon pou Anviwònman ak Byen Komen</p>
+</div>
+
+<nav>
+  <a class="nav-brand" href="#accueil">
+    <div class="nav-brand-logo">K</div>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">KABYKO</span>
+      <span class="nav-brand-sub">Coalition pour l'Environnement</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#accueil" class="active">Accueil</a>
+    <a href="#mission">Mission</a>
+    <a href="#membres">Membres</a>
+    <a href="#evenements">Événements</a>
+    <a href="#manifeste">Manifeste</a>
+    <a href="#dons">Dons</a>
+    <a href="#message" class="nav-cta">Message</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#accueil" onclick="toggleMenu()">Accueil</a>
+  <a href="#mission" onclick="toggleMenu()">Mission</a>
+  <a href="#membres" onclick="toggleMenu()">Membres</a>
+  <a href="#evenements" onclick="toggleMenu()">Événements</a>
+  <a href="#manifeste" onclick="toggleMenu()">Manifeste</a>
+  <a href="#dons" onclick="toggleMenu()">Dons</a>
+  <a href="#message" onclick="toggleMenu()">Message</a>
+</div>
+
+<section id="accueil">
+  <div class="hero-inner">
+    <h1>Teritwa Nou se Lavi Nou</h1>
+    <p>Notre territoire, c'est notre vie. Coalition pour l'Environnement et le Bien Commun</p>
+    <a href="#manifeste" class="btn-primary">Signer le Manifeste →</a>
+  </div>
+</section>
+
+<section id="mission">
+  <div class="section-inner">
+    <h2>Notre Mission</h2>
+    <p>Protéger la terre haïtienne et ses écosystèmes.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <h3>KABYKO</h3>
+      <p>Coalition pour l'Environnement et le Bien Commun</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('mobileMenu');
+    const ham = document.getElementById('hamburger');
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !ham.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+</script>
+
+</body>
+</html>
